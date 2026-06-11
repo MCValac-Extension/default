@@ -12,15 +12,7 @@ allprojects {
         mavenCentral()
         maven {
             name = "MCValac"
-            url = "https://maven.pkg.github.com/MCValac/plugin-papermc"
-            credentials {
-                username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
-                password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
-            }
-        }
-        maven {
-            name = "MCEngine"
-            url = "https://maven.pkg.github.com/MCEngine/mcextension"
+            url = "https://maven.pkg.github.com/MCValac/plugin"
             credentials {
                 username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
                 password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
@@ -40,8 +32,10 @@ subprojects {
     }
 
     dependencies {
-        // MCExtension manager API shared by all subprojects (Bukkit and platforms)
-        compileOnly 'io.github.mcengine:manager:2026.0.6-5'
+        // MCBackpack API and Common, shared by all subprojects (Bukkit and platforms).
+        // Published by the consolidated MCValac/plugin monorepo.
+        compileOnly 'io.github.mcvalac:api:2026.0.7-1'
+        compileOnly 'io.github.mcvalac:common:2026.0.7-1'
     }
 
     publishing {
