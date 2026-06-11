@@ -97,7 +97,7 @@ public class Default implements IMCExtension {
 
         registeredListeners.add(new HandleInventoryOpen(plugin, provider, passwordManager, cooldownManager));
         registeredListeners.add(new HandleInventoryClose(provider, cooldownManager));
-        registeredListeners.add(new HandleChatInput(plugin, passwordManager));
+        registeredListeners.add(new HandleChatInput(plugin, provider, passwordManager));
         registeredListeners.add(new HandleInventoryRestrict(plugin));
         registeredListeners.add(new LHandleChangeTexture(plugin, provider));
         registeredListeners.add(new LHandleChangeModelData(plugin));
