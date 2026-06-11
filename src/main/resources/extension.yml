@@ -1,8 +1,11 @@
-name: "Default"
-main: "${project_group}.defaults.papermc.Default"
-version: "${project_version}"
-extension:
-  depend: []
+name: ${name}
+version: ${version}
+
+mains:
+  papermc: "${group}.extension.defaults.papermc.Default"
+  spigotmc: "${group}.extension.defaults.spigotmc.Default"
+  foliamc: "${group}.extension.defaults.foliamc.Default"
+
 git:
   provider: github
   owner: ${git_org_name}
