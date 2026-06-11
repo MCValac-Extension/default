@@ -1,0 +1,46 @@
+repositories {
+    maven {
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
+    }
+    maven {
+        url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
+
+        content {
+            includeGroup 'org.bukkit'
+            includeGroup 'org.spigotmc'
+        }
+    }
+}
+
+dependencies {
+    compileOnly project(':bukkit')
+
+    // Paper API provides the shared Bukkit surface plus Paper-specific domain APIs reused by the entry point
+    compileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+
+    // MCExtension SpigotMC specific dependency
+    compileOnly 'io.github.mcengine:spigotmc:2026.0.6-5'
+
+    // MCBackpack provider
+    compileOnly 'io.github.mcvalac:mcbackpack-common:2026.0.5-1'
+    compileOnly 'io.github.mcvalac:mcbackpack-papermc:2026.0.5-2'
+}
+
+base {
+    archivesName = "${project.property('project-name')}SpigotMC"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifactId = 'spigotmc'
+
+            pom {
+                name = project.name
+                description = "MCValac Extension Default SpigotMC"
+            }
+        }
+    }
+}

@@ -1,0 +1,38 @@
+repositories {
+    maven {
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
+    }
+}
+
+dependencies {
+    compileOnly project(':bukkit')
+
+    // Folia API
+    compileOnly 'dev.folia:folia-api:1.21.11-R0.1-SNAPSHOT'
+
+    // MCExtension FoliaMC specific dependency
+    compileOnly 'io.github.mcengine:foliamc:2026.0.6-5'
+
+    // MCBackpack provider
+    compileOnly 'io.github.mcvalac:mcbackpack-common:2026.0.5-1'
+    compileOnly 'io.github.mcvalac:mcbackpack-papermc:2026.0.5-2'
+}
+
+base {
+    archivesName = "${project.property('project-name')}FoliaMC"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifactId = 'foliamc'
+
+            pom {
+                name = project.name
+                description = "MCValac Extension Default FoliaMC"
+            }
+        }
+    }
+}
