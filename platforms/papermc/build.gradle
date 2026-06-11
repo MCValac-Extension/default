@@ -13,7 +13,7 @@ dependencies {
 
     // MCBackpack PaperMC host (shaded): provides the relocated MCExtension API
     // (io.github.mcvalac.mcextension.*) and the MCBackpack provider classes.
-    compileOnly 'io.github.mcvalac:papermc:2026.0.7-1'
+    compileOnly 'io.github.mcvalac:papermc:2026.0.7-2'
 }
 
 base {
