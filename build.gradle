@@ -34,8 +34,8 @@ subprojects {
     dependencies {
         // MCBackpack API and Common, shared by all subprojects (Bukkit and platforms).
         // Published by the consolidated MCValac/plugin monorepo.
-        compileOnly 'io.github.mcvalac:api:2026.0.7-1'
-        compileOnly 'io.github.mcvalac:common:2026.0.7-1'
+        compileOnly 'io.github.mcvalac:api:2026.0.7-2'
+        compileOnly 'io.github.mcvalac:common:2026.0.7-2'
     }
 
     publishing {
