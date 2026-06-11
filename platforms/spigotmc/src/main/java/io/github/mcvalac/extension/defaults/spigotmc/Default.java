@@ -1,6 +1,6 @@
 package io.github.mcvalac.extension.defaults.spigotmc;
 
-import io.github.mcengine.mcextension.api.IMCExtension;
+import io.github.mcvalac.mcextension.api.IMCExtension;
 import io.github.mcvalac.extension.defaults.bukkit.command.MCBackpackCommandManager;
 import io.github.mcvalac.extension.defaults.bukkit.listener.util.HandleChatInput;
 import io.github.mcvalac.extension.defaults.bukkit.listener.util.HandleInventoryClose;
