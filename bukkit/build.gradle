@@ -1,0 +1,33 @@
+repositories {
+    maven {
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
+    }
+}
+
+dependencies {
+    // Paper API provides the Bukkit surface plus Paper-specific domain APIs used by the listeners
+    compileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+
+    // MCBackpack provider API consumed by the shared domain logic
+    compileOnly 'io.github.mcvalac:mcbackpack-api:2026.0.5-2'
+    compileOnly 'io.github.mcvalac:mcbackpack-common:2026.0.5-1'
+}
+
+base {
+    archivesName = "${project.property('project-name')}Bukkit"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifactId = 'bukkit'
+
+            pom {
+                name = project.name
+                description = "MCValac Extension Default Bukkit"
+            }
+        }
+    }
+}
