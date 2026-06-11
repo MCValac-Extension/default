@@ -1,47 +1,114 @@
 plugins {
     id 'java'
-    id 'io.github.mcengine.gradle.plugin.version-calculator' version '1.0.2'
-    id 'io.github.mcengine.gradle.plugin.plugin-export' version '1.0.2'
+    id 'maven-publish'
+    id 'com.gradleup.shadow' version '9.4.2'
 }
 
-group = project.property('project-group')
+allprojects {
+    group = project.property('project-group')
+    version = "${project.property('project-version')}-${project.property('project-iteration')}"
 
-repositories {
-    mavenCentral()
+    repositories {
+        mavenCentral()
+        maven {
+            name = "MCValac"
+            url = "https://maven.pkg.github.com/MCValac/plugin-papermc"
+            credentials {
+                username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
+                password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
+            }
+        }
+        maven {
+            name = "MCEngine"
+            url = "https://maven.pkg.github.com/MCEngine/mcextension"
+            credentials {
+                username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
+                password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
+            }
+        }
+    }
+}
 
-    maven {
-        name = 'mcvalac-plugin'
-        url = uri('https://maven.pkg.github.com/MCValac/plugin-papermc')
-        credentials {
-            username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
-            password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
         }
     }
 
-    maven {
-        name = 'papermc'
-        url = 'https://repo.papermc.io/repository/maven-public/'
+    dependencies {
+        // MCExtension manager API shared by all subprojects (Bukkit and platforms)
+        compileOnly 'io.github.mcengine:manager:2026.0.6-5'
+    }
+
+    publishing {
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = "https://maven.pkg.github.com/MCValac-Extension/default"
+                credentials {
+                    username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
+                    password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
+                }
+            }
+        }
+
+        // Apply these POM settings to ALL MavenPublications in subprojects
+        publications.withType(MavenPublication) {
+            pom {
+                url = "https://github.com/MCValac-Extension/default"
+                developers {
+                    developer {
+                        id = "jetsadawijit"
+                        name = "jetsadawijit"
+                        url = "https://github.com/jetsadawijit"
+                    }
+                }
+            }
+        }
     }
 }
 
+// Depend on subprojects to include them in the root JAR
 dependencies {
-    compileOnly "io.github.mcvalac:mcbackpack-papermc:2026.0.5-2"
-
-    compileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+    implementation project(':bukkit')
+    implementation project(':platforms:papermc')
+    implementation project(':platforms:spigotmc')
+    implementation project(':platforms:foliamc')
 }
 
+// Process extension.yml located in the root project (src/main/resources/)
 processResources {
     def props = [
-        'project_version': project.version,
-        'project_group': project.group,
-        'git_org_name': project.findProperty('git-org-name'),
-        'git_org_repository': project.findProperty('git-org-repository')
+        "name": project.property("project-name"),
+        "version": "${project.property('project-version')}-${project.property('project-iteration')}",
+        "group": project.property('project-group'),
+        "git_org_name": project.property('git-org-name'),
+        "git_org_repository": project.property('git-org-repository')
     ]
 
-    inputs.properties(props)
+    inputs.properties props
     filteringCharset 'UTF-8'
 
-    filesMatching('extension.yml') {
+    filesMatching("extension.yml") {
         expand props
     }
 }
+
+// Disable the normal jar task to prevent building the standard unshaded JAR
+tasks.named('jar') {
+    enabled = false
+}
+
+// Configure Shadow JAR to merge all subprojects into one JAR
+shadowJar {
+    archiveBaseName = 'Default'
+    archiveClassifier.set('')
+    mergeServiceFiles()
+}
+
+// Ensure build triggers shadowJar
+build.dependsOn shadowJar

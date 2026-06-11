@@ -11,7 +11,6 @@ bin/
 # --- [ Java / IDEs ] ---
 *.class
 *.log
-*.jar
 *.war
 *.zip
 .project
@@ -38,3 +37,6 @@ out/
 # --- [ OS / Miscellaneous ] ---
 .DS_Store
 Thumbs.db
+
+# --- [ AI Agent Context ] ---
+.agents/
