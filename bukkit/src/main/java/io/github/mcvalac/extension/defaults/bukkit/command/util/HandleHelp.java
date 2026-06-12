@@ -2,11 +2,7 @@ package io.github.mcvalac.extension.defaults.bukkit.command.util;
 
 import io.github.mcvalac.extension.defaults.bukkit.command.MCBackpackCommandManager;
 import io.github.mcvalac.extension.defaults.bukkit.command.IBackpackCommandHandle;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.Map;
@@ -30,16 +26,14 @@ public class HandleHelp implements IBackpackCommandHandle {
 
     /**
      * Executes the help logic.
-     * Generates a clickable list of commands based on the player's permissions.
+     * Generates a list of commands based on the player's permissions.
      *
      * @param sender The command sender.
      * @param args   Ignored.
      */
     @Override
     public void invoke(CommandSender sender, String[] args) {
-        Component header = Component.translatable("mcvalac.mcbackpack.extension.default.msg.help.header", "MCBackpack Commands")
-                .color(NamedTextColor.GOLD)
-                .decorate(TextDecoration.BOLD);
+        String header = ChatColor.GOLD + "" + ChatColor.BOLD + "MCBackpack Commands";
         sender.sendMessage(header);
 
         for (Map.Entry<String, IBackpackCommandHandle> entry : manager.getSubcommands().entrySet()) {
@@ -51,19 +45,10 @@ public class HandleHelp implements IBackpackCommandHandle {
             if (handle.getPermission() == null || sender.hasPermission(handle.getPermission())) {
                 String fullCommand = "/bp " + name;
 
-                // Translatable hover
-                Component hoverText = Component.translatable("mcvalac.mcbackpack.extension.default.msg.help.hover", "Click to suggest command").color(NamedTextColor.GREEN);
+                String cmdText = ChatColor.YELLOW + fullCommand + " ";
+                String helpMsg = ChatColor.GRAY + handle.getHelp();
 
-                Component cmdText = Component.text(fullCommand + " ")
-                        .color(NamedTextColor.YELLOW)
-                        .clickEvent(ClickEvent.suggestCommand(fullCommand + " "))
-                        .hoverEvent(HoverEvent.showText(hoverText));
-
-                // Fetch help component (Translatable) and style it
-                Component helpMsg = handle.getHelp().color(NamedTextColor.GRAY);
-
-                Component builder = cmdText.append(helpMsg);
-                sender.sendMessage(builder);
+                sender.sendMessage(cmdText + helpMsg);
             }
         }
     }
@@ -74,8 +59,8 @@ public class HandleHelp implements IBackpackCommandHandle {
      * @return The usage syntax.
      */
     @Override
-    public Component getHelp() {
-        return Component.translatable("mcvalac.mcbackpack.extension.default.msg.help.help", "- View this help menu");
+    public String getHelp() {
+        return "- View this help menu";
     }
 
     /**

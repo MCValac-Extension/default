@@ -1,7 +1,6 @@
 package io.github.mcvalac.extension.defaults.bukkit.listener.util;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -52,7 +51,7 @@ public class LHandleChangeModelData implements Listener {
 
         String modelData = cursor.getItemMeta().getPersistentDataContainer().get(applicatorKey, PersistentDataType.STRING);
         if (modelData == null || modelData.isBlank()) {
-            player.sendMessage(Component.translatable("mcvalac.mcbackpack.extension.default.msg.error.model_data.invalid", "Invalid model data.").color(NamedTextColor.RED));
+            player.sendMessage(ChatColor.RED + "Invalid model data.");
             return;
         }
 
@@ -71,7 +70,7 @@ public class LHandleChangeModelData implements Listener {
             event.getView().setCursor(null);
         }
 
-        player.sendMessage(Component.translatable("mcvalac.mcbackpack.extension.default.msg.model_data.applied", "Model data applied.").color(NamedTextColor.GREEN));
+        player.sendMessage(ChatColor.GREEN + "Model data applied.");
         player.updateInventory();
     }
 }

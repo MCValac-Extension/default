@@ -3,16 +3,14 @@ package io.github.mcvalac.extension.defaults.bukkit.listener.util;
 import io.github.mcvalac.mcbackpack.common.MCBackpackProvider;
 import io.github.mcvalac.extension.defaults.bukkit.listener.util.HandleInventoryOpen.BackpackHolder;
 import io.github.mcvalac.extension.defaults.bukkit.manager.BackpackCooldownManager;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import io.github.mcvalac.extension.defaults.bukkit.util.InventorySerialization;
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Base64;
 
 /**
@@ -45,14 +43,13 @@ public class HandleInventoryClose implements Listener {
 
             } catch (IOException e) {
                 e.printStackTrace();
-                Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.error.save", "Could not save backpack contents").color(NamedTextColor.RED);
-                event.getPlayer().sendMessage(msg);
+                event.getPlayer().sendMessage(ChatColor.RED + "Could not save backpack contents");
             }
         }
     }
 
     private String toBase64(Inventory inventory) throws IOException {
-        byte[] data = ItemStack.serializeItemsAsBytes(Arrays.asList(inventory.getContents()));
+        byte[] data = InventorySerialization.toBytes(inventory.getContents());
         return Base64.getEncoder().encodeToString(data);
     }
 }

@@ -1,11 +1,8 @@
 package io.github.mcvalac.extension.defaults.bukkit.command.util;
 
-import com.destroystokyo.paper.profile.PlayerProfile;
-import com.destroystokyo.paper.profile.ProfileProperty;
 import io.github.mcvalac.extension.defaults.bukkit.command.IBackpackCommandHandle;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
+import io.github.mcvalac.extension.defaults.bukkit.util.SkullTextures;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
@@ -16,7 +13,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Base64;
-import java.util.UUID;
 
 /**
  * Command handler for giving the player a "Texture Applicator" item.
@@ -47,16 +43,14 @@ public class CHandleChangeTexture implements IBackpackCommandHandle {
     @Override
     public void invoke(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
-            Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.only_players", "Only players can use this command.").color(NamedTextColor.RED);
-            sender.sendMessage(msg);
+            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
             return;
         }
 
         Player player = (Player) sender;
 
         if (args.length < 1) {
-            Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.usage.texture", "/bp texture <base64_texture>").color(NamedTextColor.RED);
-            player.sendMessage(msg);
+            player.sendMessage(ChatColor.RED + "/bp texture <base64_texture>");
             return;
         }
 
@@ -67,24 +61,21 @@ public class CHandleChangeTexture implements IBackpackCommandHandle {
         SkullMeta meta = (SkullMeta) applicator.getItemMeta();
 
         if (meta != null) {
-            // 1. Apply Texture (Visual)
+            // 1. Validate base64 to prevent crashes with invalid input
             try {
-                PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
-                // Simple validation to prevent crashes with invalid base64
                 new String(Base64.getDecoder().decode(texture));
-
-                profile.setProperty(new ProfileProperty("textures", texture));
-                meta.setPlayerProfile(profile);
             } catch (IllegalArgumentException e) {
-                Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.error.invalid_texture", "Invalid texture value.").color(NamedTextColor.RED);
-                player.sendMessage(msg);
+                player.sendMessage(ChatColor.RED + "Invalid texture value.");
                 return;
             }
 
-            // 2. Set Name
-            meta.displayName(Component.translatable("mcvalac.mcbackpack.extension.default.item.applicator.name", "Backpack Texture Applicator").color(NamedTextColor.LIGHT_PURPLE));
+            // 2. Apply Texture (Visual)
+            SkullTextures.apply(meta, texture);
 
-            // 3. Store Data for Listener
+            // 3. Set Name
+            meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Backpack Texture Applicator");
+
+            // 4. Store Data for Listener
             meta.getPersistentDataContainer().set(applicatorKey, PersistentDataType.STRING, texture);
 
             applicator.setItemMeta(meta);
@@ -96,17 +87,16 @@ public class CHandleChangeTexture implements IBackpackCommandHandle {
             player.getWorld().dropItemNaturally(player.getLocation(), applicator);
         }
 
-        Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.texture.received", "Texture applicator received.").color(NamedTextColor.GREEN);
-        player.sendMessage(msg);
+        player.sendMessage(ChatColor.GREEN + "Texture applicator received.");
     }
 
     /**
-     * Retrieves the help component.
+     * Retrieves the help text.
      * @return The usage syntax.
      */
     @Override
-    public Component getHelp() {
-        return Component.translatable("mcvalac.mcbackpack.extension.default.msg.help.texture", "<base64_texture> - Get a backpack texture applicator");
+    public String getHelp() {
+        return "<base64_texture> - Get a backpack texture applicator";
     }
 
     /**

@@ -1,14 +1,19 @@
 repositories {
     maven {
-        name = "papermc-repo"
-        url = "https://repo.papermc.io/repository/maven-public/"
+        url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
+
+        content {
+            includeGroup 'org.bukkit'
+            includeGroup 'org.spigotmc'
+        }
     }
 }
 
 dependencies {
-    // Paper API provides the Bukkit surface plus Paper-specific domain APIs used by the listeners.
-    // The MCBackpack api/common dependencies are supplied to every subproject by the root build.gradle.
-    compileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+    // SpigotMC API: the lowest-common-denominator server surface shared by all
+    // platforms. The MCBackpack api/common dependencies are supplied to every
+    // subproject by the root build.gradle.
+    compileOnly 'org.spigotmc:spigot-api:26.1.2-R0.1-SNAPSHOT'
 }
 
 base {

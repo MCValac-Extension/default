@@ -3,9 +3,9 @@ package io.github.mcvalac.extension.defaults.bukkit.listener.util;
 import io.github.mcvalac.mcbackpack.common.MCBackpackProvider;
 import io.github.mcvalac.extension.defaults.bukkit.manager.BackpackCooldownManager;
 import io.github.mcvalac.extension.defaults.bukkit.manager.PasswordInputManager;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import io.github.mcvalac.extension.defaults.bukkit.util.InventorySerialization;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -67,47 +67,38 @@ public class HandleInventoryOpen implements Listener {
         if (cooldownManager.isOnCooldown(player.getUniqueId())) {
             long remainingMs = cooldownManager.getRemainingMillis(player.getUniqueId());
             long remainingSeconds = Math.max(1, (long) Math.ceil(remainingMs / 1000.0));
-            Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.cooldown", "Please wait before opening your backpack again")
-                    .color(NamedTextColor.YELLOW)
-                    .append(Component.text(" (" + remainingSeconds + "s)"));
-            player.sendMessage(msg);
+            player.sendMessage(ChatColor.YELLOW + "Please wait before opening your backpack again (" + remainingSeconds + "s)");
             return;
         }
 
         if (passwordManager.isPending(player.getUniqueId())) {
-            Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.password.enter", "Please enter your backpack password in chat").color(NamedTextColor.YELLOW);
-            player.sendMessage(msg);
+            player.sendMessage(ChatColor.YELLOW + "Please enter your backpack password in chat");
             return;
         }
 
-        Component loading = Component.translatable("mcvalac.mcbackpack.extension.default.msg.item.open", "Opening backpack...").color(NamedTextColor.GRAY);
-        player.sendMessage(loading);
+        player.sendMessage(ChatColor.GRAY + "Opening backpack...");
 
         // CHANGED: Pass player UUID to provider
         provider.open(backpackUuid, player.getUniqueId().toString()).thenAccept(data -> {
             Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin("MCBackpack"), () -> {
 
                 if (data == null) {
-                    Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.error.load", "Could not load backpack data").color(NamedTextColor.RED);
-                    player.sendMessage(msg);
+                    player.sendMessage(ChatColor.RED + "Could not load backpack data");
                     return;
                 }
 
                 boolean hasPassword = (data.getPwdHash() != null && !data.getPwdHash().isEmpty());
 
                 if (hasPassword && !player.isOp()) {
-                    Component locked = Component.translatable("mcvalac.mcbackpack.extension.default.msg.locked", "This backpack is locked").color(NamedTextColor.RED);
-                    player.sendMessage(locked);
-
-                    Component instr = Component.translatable("mcvalac.mcbackpack.extension.default.msg.password.instruction", "Type your password in chat, or type 'cancel' to abort").color(NamedTextColor.YELLOW);
-                    player.sendMessage(instr);
+                    player.sendMessage(ChatColor.RED + "This backpack is locked");
+                    player.sendMessage(ChatColor.YELLOW + "Type your password in chat, or type 'cancel' to abort");
 
                     passwordManager.addPending(player.getUniqueId(), data);
                     return;
                 }
 
                 try {
-                    Component title = Component.translatable("mcvalac.mcbackpack.extension.default.gui.title", "Backpack");
+                    String title = "Backpack";
 
                     Inventory backpackInv;
                     if (data.getContent() == null || data.getContent().isEmpty()) {
@@ -120,20 +111,19 @@ public class HandleInventoryOpen implements Listener {
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.error.deserialize", "Failed to read backpack contents").color(NamedTextColor.RED);
-                    player.sendMessage(msg);
+                    player.sendMessage(ChatColor.RED + "Failed to read backpack contents");
                 }
             });
         });
     }
 
-    private Inventory fromBase64(String base64, int size, String uuid, Component title) throws IOException {
+    private Inventory fromBase64(String base64, int size, String uuid, String title) throws IOException {
         Inventory inventory = Bukkit.createInventory(new BackpackHolder(uuid), size, title);
 
         if (base64 == null || base64.isEmpty()) return inventory;
 
         byte[] data = Base64.getDecoder().decode(base64);
-        ItemStack[] items = ItemStack.deserializeItemsFromBytes(data);
+        ItemStack[] items = InventorySerialization.fromBytes(data);
 
         inventory.setContents(items);
         return inventory;

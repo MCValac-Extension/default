@@ -1,8 +1,7 @@
 package io.github.mcvalac.extension.defaults.bukkit.listener.util;
 
 import io.github.mcvalac.extension.defaults.bukkit.listener.util.HandleInventoryOpen.BackpackHolder;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
@@ -52,8 +51,7 @@ public class HandleInventoryRestrict implements Listener {
             for (int slot : event.getRawSlots()) {
                 if (slot < topSize) {
                     event.setCancelled(true);
-                    Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.error.recursive", "You cannot put a backpack inside another backpack.").color(NamedTextColor.RED);
-                    event.getWhoClicked().sendMessage(msg);
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "You cannot put a backpack inside another backpack.");
                     return;
                 }
             }
@@ -93,8 +91,7 @@ public class HandleInventoryRestrict implements Listener {
                (event.getClick() == ClickType.NUMBER_KEY && isBackpack(event.getWhoClicked().getInventory().getItem(event.getHotbarButton())))) {
 
                  event.setCancelled(true);
-                 Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.error.recursive", "You cannot put a backpack inside another backpack.").color(NamedTextColor.RED);
-                 event.getWhoClicked().sendMessage(msg);
+                 event.getWhoClicked().sendMessage(ChatColor.RED + "You cannot put a backpack inside another backpack.");
                  return;
             }
         }
@@ -104,8 +101,7 @@ public class HandleInventoryRestrict implements Listener {
             if (event.getClickedInventory() != event.getView().getTopInventory()) {
                 if (isBackpack(event.getCurrentItem())) {
                     event.setCancelled(true);
-                    Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.error.recursive", "You cannot put a backpack inside another backpack.").color(NamedTextColor.RED);
-                    event.getWhoClicked().sendMessage(msg);
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "You cannot put a backpack inside another backpack.");
                     return;
                 }
             }

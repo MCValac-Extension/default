@@ -1,11 +1,8 @@
 package io.github.mcvalac.extension.defaults.bukkit.listener.util;
 
-import com.destroystokyo.paper.profile.PlayerProfile;
-import com.destroystokyo.paper.profile.ProfileProperty;
 import io.github.mcvalac.mcbackpack.common.MCBackpackProvider;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
+import io.github.mcvalac.extension.defaults.bukkit.util.SkullTextures;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -16,8 +13,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
-
-import java.util.UUID;
 
 /**
  * Listens for inventory interactions to apply textures to backpacks.
@@ -83,9 +78,7 @@ public class LHandleChangeTexture implements Listener {
         // 1. Update Visuals (ItemMeta)
         SkullMeta backpackMeta = (SkullMeta) current.getItemMeta();
 
-        PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
-        profile.setProperty(new ProfileProperty("textures", newTexture));
-        backpackMeta.setPlayerProfile(profile);
+        SkullTextures.apply(backpackMeta, newTexture);
 
         backpackMeta.getPersistentDataContainer().set(textureKey, PersistentDataType.STRING, newTexture);
 
@@ -101,8 +94,7 @@ public class LHandleChangeTexture implements Listener {
 
         // 3. Update Database (Async)
         provider.setTexture(uuid, newTexture).thenRun(() -> {
-            Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.texture.applied", "Backpack texture applied.").color(NamedTextColor.GREEN);
-            player.sendMessage(msg);
+            player.sendMessage(ChatColor.GREEN + "Backpack texture applied.");
         });
 
         // 4. Force Inventory Update

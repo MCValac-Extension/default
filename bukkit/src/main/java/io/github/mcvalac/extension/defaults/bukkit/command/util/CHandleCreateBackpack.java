@@ -1,11 +1,8 @@
 package io.github.mcvalac.extension.defaults.bukkit.command.util;
 
-import com.destroystokyo.paper.profile.PlayerProfile;
-import com.destroystokyo.paper.profile.ProfileProperty;
 import io.github.mcvalac.extension.defaults.bukkit.command.IBackpackCommandHandle;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
+import io.github.mcvalac.extension.defaults.bukkit.util.SkullTextures;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
@@ -18,7 +15,6 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.Base64;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Command handler for creating a new "Backpack Creation" item.
@@ -59,8 +55,7 @@ public class CHandleCreateBackpack implements IBackpackCommandHandle {
     @Override
     public void invoke(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
-            Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.only_players", "Only players can use this command.").color(NamedTextColor.RED);
-            sender.sendMessage(msg);
+            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
             return;
         }
 
@@ -79,13 +74,11 @@ public class CHandleCreateBackpack implements IBackpackCommandHandle {
             try {
                 size = Integer.parseInt(args[0]);
                 if (size % 9 != 0 || size < 9 || size > 54) {
-                    Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.error.size.invalid", "Size must be a multiple of 9 between 9 and 54.").color(NamedTextColor.RED);
-                    player.sendMessage(msg);
+                    player.sendMessage(ChatColor.RED + "Size must be a multiple of 9 between 9 and 54.");
                     return;
                 }
             } catch (NumberFormatException e) {
-                Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.error.number.invalid", "Invalid number format.").color(NamedTextColor.RED);
-                player.sendMessage(msg);
+                player.sendMessage(ChatColor.RED + "Invalid number format.");
                 return;
             }
         }
@@ -107,16 +100,14 @@ public class CHandleCreateBackpack implements IBackpackCommandHandle {
         if (meta != null) {
             // 1. Apply Texture (Visual)
             try {
-                PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
                 String decoded = new String(Base64.getDecoder().decode(texture));
                 if (decoded.contains("http")) {
-                    profile.setProperty(new ProfileProperty("textures", texture));
-                    meta.setPlayerProfile(profile);
+                    SkullTextures.apply(meta, texture);
                 }
             } catch (IllegalArgumentException ignored) { }
 
-            // 2. Set Name: "Backpack Creation {size}" using Adventure API
-            meta.displayName(Component.translatable("mcvalac.mcbackpack.extension.default.item.creation.name", "Backpack Creation").color(NamedTextColor.AQUA).append(Component.text(" " + size)));
+            // 2. Set Name: "Backpack Creation {size}"
+            meta.setDisplayName(ChatColor.AQUA + "Backpack Creation " + size);
 
             // 3. Store Data in NBT for Listener
             meta.getPersistentDataContainer().set(sizeKey, PersistentDataType.INTEGER, size);
@@ -135,8 +126,7 @@ public class CHandleCreateBackpack implements IBackpackCommandHandle {
 
         player.getInventory().addItem(backpackItem);
 
-        Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.creation.received", "Backpack creation item received.").color(NamedTextColor.GREEN);
-        player.sendMessage(msg);
+        player.sendMessage(ChatColor.GREEN + "Backpack creation item received.");
     }
 
     /**
@@ -144,8 +134,8 @@ public class CHandleCreateBackpack implements IBackpackCommandHandle {
      * @return The usage syntax "[size] [texture] - Get a new backpack item".
      */
     @Override
-    public Component getHelp() {
-        return Component.translatable("mcvalac.mcbackpack.extension.default.msg.help.create", "[size] [texture] - Get a new backpack item");
+    public String getHelp() {
+        return "[size] [texture] - Get a new backpack item";
     }
 
     /**

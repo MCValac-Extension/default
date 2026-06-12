@@ -4,15 +4,14 @@ import io.github.mcvalac.mcbackpack.api.model.BackpackData;
 import io.github.mcvalac.mcbackpack.common.MCBackpackProvider;
 import io.github.mcvalac.extension.defaults.bukkit.listener.util.HandleInventoryOpen.BackpackHolder;
 import io.github.mcvalac.extension.defaults.bukkit.manager.PasswordInputManager;
-import io.papermc.paper.event.player.AsyncChatEvent;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import io.github.mcvalac.extension.defaults.bukkit.util.InventorySerialization;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -65,7 +64,7 @@ public class HandleChatInput implements Listener {
      * @param event The chat event.
      */
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onChat(AsyncChatEvent event) {
+    public void onChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
 
         if (!passwordManager.isPending(player.getUniqueId())) {
@@ -74,13 +73,12 @@ public class HandleChatInput implements Listener {
 
         event.setCancelled(true);
 
-        String input = PlainTextComponentSerializer.plainText().serialize(event.message());
+        String input = event.getMessage();
         BackpackData data = passwordManager.getPending(player.getUniqueId());
 
         if (input.equalsIgnoreCase("cancel")) {
             passwordManager.removePending(player.getUniqueId());
-            Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.cancelled", "Backpack opening cancelled").color(NamedTextColor.YELLOW);
-            player.sendMessage(msg);
+            player.sendMessage(ChatColor.YELLOW + "Backpack opening cancelled");
             return;
         }
 
@@ -91,11 +89,10 @@ public class HandleChatInput implements Listener {
                 if (Boolean.TRUE.equals(valid)) {
                     passwordManager.removePending(player.getUniqueId());
 
-                    Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.password.correct", "Password correct").color(NamedTextColor.GREEN);
-                    player.sendMessage(msg);
+                    player.sendMessage(ChatColor.GREEN + "Password correct");
 
                     try {
-                        Component title = Component.translatable("mcvalac.mcbackpack.extension.default.gui.title", "Backpack");
+                        String title = "Backpack";
 
                         Inventory backpackInv;
                         if (data.getContent() == null || data.getContent().isEmpty()) {
@@ -106,16 +103,11 @@ public class HandleChatInput implements Listener {
                         player.openInventory(backpackInv);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Component err = Component.translatable("mcvalac.mcbackpack.extension.default.msg.error.item.open", "Could not open backpack").color(NamedTextColor.RED);
-                        player.sendMessage(err);
+                        player.sendMessage(ChatColor.RED + "Could not open backpack");
                     }
                 } else {
                     // Keep the player pending so they can retry.
-                    Component incorrect = Component.translatable("mcvalac.mcbackpack.extension.default.msg.password.incorrect", "Incorrect password").color(NamedTextColor.RED);
-                    Component tryAgain = Component.translatable("mcvalac.mcbackpack.extension.default.msg.try.again", "Please try again").color(NamedTextColor.RED);
-
-                    Component builder = incorrect.append(Component.text(" ")).append(tryAgain);
-                    player.sendMessage(builder);
+                    player.sendMessage(ChatColor.RED + "Incorrect password " + ChatColor.RED + "Please try again");
                 }
             });
         });
@@ -131,12 +123,12 @@ public class HandleChatInput implements Listener {
      * @return The reconstructed Inventory object.
      * @throws IOException If IO errors occur.
      */
-    private Inventory fromBase64(String base64, int size, String uuid, Component title) throws IOException {
+    private Inventory fromBase64(String base64, int size, String uuid, String title) throws IOException {
         Inventory inventory = Bukkit.createInventory(new BackpackHolder(uuid), size, title);
         if (base64 == null || base64.isEmpty()) return inventory;
 
         byte[] data = Base64.getDecoder().decode(base64);
-        ItemStack[] items = ItemStack.deserializeItemsFromBytes(data);
+        ItemStack[] items = InventorySerialization.fromBytes(data);
 
         inventory.setContents(items);
         return inventory;
