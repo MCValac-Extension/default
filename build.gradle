@@ -42,7 +42,7 @@ subprojects {
         repositories {
             maven {
                 name = "GitHubPackages"
-                url = "https://maven.pkg.github.com/MCValac-Extension/default"
+                url = "https://maven.pkg.github.com/MCValac-Extension/core"
                 credentials {
                     username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
                     password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
@@ -53,7 +53,7 @@ subprojects {
         // Apply these POM settings to ALL MavenPublications in subprojects
         publications.withType(MavenPublication) {
             pom {
-                url = "https://github.com/MCValac-Extension/default"
+                url = "https://github.com/MCValac-Extension/core"
                 developers {
                     developer {
                         id = "jetsadawijit"
@@ -99,7 +99,7 @@ tasks.named('jar') {
 
 // Configure Shadow JAR to merge all subprojects into one JAR
 shadowJar {
-    archiveBaseName = 'Default'
+    archiveBaseName = 'Core'
     archiveClassifier.set('')
     mergeServiceFiles()
 }

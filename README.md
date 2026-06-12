@@ -1,6 +1,6 @@
-# MCBackpack Default Extension (PaperMC, SpigotMC & FoliaMC)
+# MCBackpack Core Extension (PaperMC, SpigotMC & FoliaMC)
 
-The Default extension for MCBackpack provides the out-of-the-box backpack experience: a `/bp` command, inventory listeners, password protection, and item customization. It is built as a multi-module, multi-platform project that runs on PaperMC, SpigotMC, and FoliaMC servers.
+The Core extension for MCBackpack provides the out-of-the-box backpack experience: a `/bp` command, inventory listeners, password protection, and item customization. It is built as a multi-module, multi-platform project that runs on PaperMC, SpigotMC, and FoliaMC servers.
 
 ## Features
 
@@ -27,14 +27,14 @@ The Default extension for MCBackpack provides the out-of-the-box backpack experi
 This project follows a multi-module, multi-platform layout:
 
 - `bukkit`: Shared, platform-independent backpack domain logic (commands, listeners, managers, tab completer).
-- `platforms/papermc`: PaperMC entry point (`Default`).
-- `platforms/spigotmc`: SpigotMC entry point (`Default`).
-- `platforms/foliamc`: FoliaMC entry point (`Default`).
+- `platforms/papermc`: PaperMC entry point (`Core`).
+- `platforms/spigotmc`: SpigotMC entry point (`Core`).
+- `platforms/foliamc`: FoliaMC entry point (`Core`).
 
 ## Installation
 
 1. Ensure the [MCBackpack Plugin](https://github.com/MCValac) is installed on your PaperMC, SpigotMC, or FoliaMC server.
-2. Place the compiled `Default-*.jar` into the following directory:
+2. Place the compiled `Core-*.jar` into the following directory:
 
    ```text
    plugins/MCBackpack/extensions/libs
