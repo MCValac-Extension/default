@@ -1,8 +1,7 @@
 package io.github.mcvalac.extension.defaults.bukkit.command.util;
 
 import io.github.mcvalac.extension.defaults.bukkit.command.IBackpackCommandHandle;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
@@ -26,14 +25,14 @@ public class CHandleChangeModelData implements IBackpackCommandHandle {
     @Override
     public void invoke(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Component.translatable("mcvalac.mcbackpack.extension.default.msg.only_players", "Only players can use this command.").color(NamedTextColor.RED));
+            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
             return;
         }
 
         Player player = (Player) sender;
 
         if (args.length < 1) {
-            player.sendMessage(Component.translatable("mcvalac.mcbackpack.extension.default.msg.usage.get.model.data", "/bp get model data <model_data>").color(NamedTextColor.RED));
+            player.sendMessage(ChatColor.RED + "/bp get model data <model_data>");
             return;
         }
 
@@ -43,7 +42,7 @@ public class CHandleChangeModelData implements IBackpackCommandHandle {
         ItemMeta meta = applicator.getItemMeta();
 
         if (meta != null) {
-            meta.displayName(Component.translatable("mcvalac.mcbackpack.extension.default.item.model_data_applicator.name", "Backpack Model Data Applicator").color(NamedTextColor.LIGHT_PURPLE));
+            meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Backpack Model Data Applicator");
             meta.getPersistentDataContainer().set(applicatorKey, PersistentDataType.STRING, modelData);
             applicator.setItemMeta(meta);
         }
@@ -53,12 +52,12 @@ public class CHandleChangeModelData implements IBackpackCommandHandle {
             player.getWorld().dropItemNaturally(player.getLocation(), applicator);
         }
 
-        player.sendMessage(Component.translatable("mcvalac.mcbackpack.extension.default.msg.model_data.received", "Model data applicator received.").color(NamedTextColor.GREEN));
+        player.sendMessage(ChatColor.GREEN + "Model data applicator received.");
     }
 
     @Override
-    public Component getHelp() {
-        return Component.translatable("mcvalac.mcbackpack.extension.default.msg.help.get.model.data", "model data <model_data> - Get a model data applicator");
+    public String getHelp() {
+        return "model data <model_data> - Get a model data applicator";
     }
 
     @Override

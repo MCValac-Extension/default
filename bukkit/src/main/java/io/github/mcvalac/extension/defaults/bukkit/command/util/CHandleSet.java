@@ -1,8 +1,7 @@
 package io.github.mcvalac.extension.defaults.bukkit.command.util;
 
 import io.github.mcvalac.extension.defaults.bukkit.command.IBackpackCommandHandle;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
@@ -25,12 +24,12 @@ public class CHandleSet implements IBackpackCommandHandle {
             return;
         }
 
-        sender.sendMessage(Component.translatable("mcvalac.mcbackpack.extension.default.msg.usage.get.model.data", "/bp get model data <model_data>").color(NamedTextColor.RED));
+        sender.sendMessage(ChatColor.RED + "/bp get model data <model_data>");
     }
 
     @Override
-    public Component getHelp() {
-        return Component.translatable("mcvalac.mcbackpack.extension.default.msg.help.get", "model data <model_data> - Get set subcommands");
+    public String getHelp() {
+        return "model data <model_data> - Get set subcommands";
     }
 
     @Override

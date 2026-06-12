@@ -1,9 +1,8 @@
 package io.github.mcvalac.extension.defaults.bukkit.listener.util;
 
 import io.github.mcvalac.mcbackpack.common.MCBackpackProvider;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -101,8 +100,7 @@ public class LHandleCreateBackpack implements Listener {
 
         // Check if inventory has space before creating (only needed if stacking)
         if (item.getAmount() > 1 && player.getInventory().firstEmpty() == -1) {
-            Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.error.inventory.full", "Your inventory is full.").color(NamedTextColor.RED);
-            player.sendMessage(msg);
+            player.sendMessage(ChatColor.RED + "Your inventory is full.");
             return;
         }
 
@@ -124,8 +122,7 @@ public class LHandleCreateBackpack implements Listener {
                 // Verify the player is still holding a valid creation item
                 if (handItem.getType() != Material.PLAYER_HEAD || handItem.getItemMeta() == null ||
                     !handItem.getItemMeta().getPersistentDataContainer().has(sizeKey, PersistentDataType.INTEGER)) {
-                    Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.error.item.moved", "Backpack item moved before initialization completed.").color(NamedTextColor.RED);
-                    player.sendMessage(msg);
+                    player.sendMessage(ChatColor.RED + "Backpack item moved before initialization completed.");
                     return;
                 }
 
@@ -147,8 +144,8 @@ public class LHandleCreateBackpack implements Listener {
                     newMeta.setCustomModelDataComponent(customModelData);
                 }
 
-                // Rename to "Backpack {size}" using Adventure API
-                newMeta.displayName(Component.translatable("mcvalac.mcbackpack.extension.default.item.name", "Backpack").color(NamedTextColor.GOLD).append(Component.text(" " + size)));
+                // Rename to "Backpack {size}"
+                newMeta.setDisplayName(ChatColor.GOLD + "Backpack " + size);
                 newBackpack.setItemMeta(newMeta);
 
                 // Handle the original stack
@@ -163,8 +160,7 @@ public class LHandleCreateBackpack implements Listener {
                     player.getInventory().setItemInMainHand(newBackpack);
                 }
 
-                Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.initialized", "Backpack initialized successfully.").color(NamedTextColor.GREEN);
-                player.sendMessage(msg);
+                player.sendMessage(ChatColor.GREEN + "Backpack initialized successfully.");
             });
         });
     }

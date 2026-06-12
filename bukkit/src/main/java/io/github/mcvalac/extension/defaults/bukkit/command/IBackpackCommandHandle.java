@@ -1,6 +1,5 @@
 package io.github.mcvalac.extension.defaults.bukkit.command;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -19,9 +18,9 @@ public interface IBackpackCommandHandle {
     /**
      * Gets subcommand help text.
      *
-     * @return Help component.
+     * @return Help text.
      */
-    Component getHelp();
+    String getHelp();
 
     /**
      * Gets required permission for this subcommand.

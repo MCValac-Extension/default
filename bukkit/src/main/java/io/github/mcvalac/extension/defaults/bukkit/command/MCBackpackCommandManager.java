@@ -8,8 +8,7 @@ import io.github.mcvalac.extension.defaults.bukkit.command.util.HandleChangePwd;
 import io.github.mcvalac.extension.defaults.bukkit.command.util.HandleDeletePwd;
 import io.github.mcvalac.extension.defaults.bukkit.command.util.HandleHelp;
 import io.github.mcvalac.extension.defaults.bukkit.command.util.HandleSetPwd;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
@@ -57,7 +56,7 @@ public class MCBackpackCommandManager {
         IBackpackCommandHandle handle = subcommands.get(sub);
 
         if (handle == null) {
-            Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.error.unknown_command", "Unknown subcommand.").color(NamedTextColor.RED);
+            String msg = ChatColor.RED + "Unknown subcommand.";
             sender.sendMessage(msg);
             subcommands.get("help").invoke(sender, args);
             return true;
@@ -65,7 +64,7 @@ public class MCBackpackCommandManager {
 
         // Permission check
         if (handle.getPermission() != null && !sender.hasPermission(handle.getPermission())) {
-            Component msg = Component.translatable("mcvalac.mcbackpack.extension.default.msg.error.no_permission", "You do not have permission to use this command.").color(NamedTextColor.RED);
+            String msg = ChatColor.RED + "You do not have permission to use this command.";
             sender.sendMessage(msg);
             return true;
         }
